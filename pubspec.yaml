@@ -1,11 +1,11 @@
 name: flutter_aws_kms
 description: "A new Flutter plugin project."
-version: 0.0.1
+version: 1.0.0+1
 homepage: https://github.com/dewabagas/flutter-aws-kms
 
 environment:
   sdk: ^3.5.4
-  flutter: '>=3.3.0'
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:

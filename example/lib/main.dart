@@ -35,20 +35,27 @@ class _KmsDemoPageState extends State<KmsDemoPage> {
   final String _accessKeyId = 'AKIA6GBMDMGV22MFOXVH';
   final String _secretAccessKey = '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';
   final String _region = 'us-east-1';
-  final String _arnKey = 'arn:aws:kms:us-east-1:975050072491:key/67ae3a59-4c4b-4700-9044-633716f1443b';
+  final String _arnKey =
+      'arn:aws:kms:us-east-1:975050072491:key/67ae3a59-4c4b-4700-9044-633716f1443b';
 
   String? _encryptedText;
   String? _decryptedText;
+
+  @override
+  void initState() {
+    _initialize();
+    super.initState();
+  }
+
+  void _initialize() async {
+    _awsKmsService.configure(_arnKey, _accessKeyId, _secretAccessKey, _region);
+  }
 
   Future<void> _encryptText() async {
     final plaintext = _plaintextController.text;
 
     if (plaintext.isNotEmpty) {
       final encrypted = await _awsKmsService.encrypt(
-        _accessKeyId,
-        _secretAccessKey,
-        _region,
-        _arnKey,
         plaintext,
       );
       log('Encrypted: $encrypted');
@@ -61,10 +68,6 @@ class _KmsDemoPageState extends State<KmsDemoPage> {
   Future<void> _decryptText() async {
     if (_encryptedText != null) {
       final decrypted = await _awsKmsService.decrypt(
-        _accessKeyId,
-        _secretAccessKey,
-        _region,
-        _arnKey,
         _encryptedText!,
       );
       log('Decrypted: $decrypted');
