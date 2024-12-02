@@ -1,0 +1,61 @@
+PODS:
+  - AWSCore (2.37.2)
+  - AWSKMS (2.37.2):
+    - AWSCore (= 2.37.2)
+  - DLMantle (2.2)
+  - Flutter (1.0.0)
+  - flutter_aws_kms (0.0.1):
+    - AWSCore
+    - AWSKMS
+    - Flutter
+    - KMSClient
+  - integration_test (0.0.1):
+    - Flutter
+  - KMSClient (1.2.3):
+    - DLMantle (~> 2.2)
+    - MantleNullValuesOmit (~> 0.0.5)
+    - RACObjC (~> 3.3)
+    - WebSocketRocket (~> 0.5)
+  - MantleNullValuesOmit (0.0.5):
+    - DLMantle (~> 2.2)
+  - RACObjC (3.3.0)
+  - WebSocketRocket (0.5.5)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_aws_kms (from `.symlinks/plugins/flutter_aws_kms/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+
+SPEC REPOS:
+  trunk:
+    - AWSCore
+    - AWSKMS
+    - DLMantle
+    - KMSClient
+    - MantleNullValuesOmit
+    - RACObjC
+    - WebSocketRocket
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_aws_kms:
+    :path: ".symlinks/plugins/flutter_aws_kms/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+
+SPEC CHECKSUMS:
+  AWSCore: 4cbaf219af10ec390a0432ee2b380f7fa644b80c
+  AWSKMS: 04a0d1e2c3ea466e240a55afef676d8b29cbf77e
+  DLMantle: deb6033847123bdb43f1ebf3aed35db84380e57d
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_aws_kms: 62b98d2232d70c7faa449ae38938d238a20717a1
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  KMSClient: aaf4dd39ecffec24d4c1eeb8234b455229343409
+  MantleNullValuesOmit: 693c1e4868bee337f30d38b90c89431bb46dfc56
+  RACObjC: d4f7c8c966a7ff8f04ba315507110ab1e940aef6
+  WebSocketRocket: ad15beb53f56f24ee74fc96cb2bc3fe305452a8a
+
+PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
+
+COCOAPODS: 1.16.2
