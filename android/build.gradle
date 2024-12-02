@@ -1,0 +1,95 @@
+group = "com.arabmakloem.flutter_aws_kms"
+version = "1.0-SNAPSHOT"
+
+buildscript {
+    ext.kotlin_version = "1.8.22"
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://aws-sdk-java-kotlin-release.s3.amazonaws.com/' }
+    }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+android {
+    if (project.android.hasProperty("namespace")) {
+        namespace = "com.arabmakloem.flutter_aws_kms"
+    }
+
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
+    }
+
+    defaultConfig {
+        minSdk = 23
+    }
+
+    dependencies {
+        testImplementation("org.jetbrains.kotlin:kotlin-test")
+        testImplementation("org.mockito:mockito-core:5.0.0")
+
+        // AWS Kotlin SDK for KMS
+        implementation 'aws.sdk.kotlin:kms:1.2.28'
+
+        // AWS Secrets Manager SDK
+        implementation 'aws.sdk.kotlin:secretsmanager:1.2.28'
+
+        // AWS Smithy HTTP client engines
+        implementation 'aws.smithy.kotlin:http-client-engine-okhttp:0.30.0'
+        implementation 'aws.smithy.kotlin:http-client-engine-crt:0.30.0'
+
+        // Gson for JSON parsing
+        implementation 'com.google.code.gson:gson:2.10'
+
+        // Kotlin Coroutines Core
+        implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+        implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+
+        // JUnit for testing
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+
+        // AWS Android SDK Core (Existing in your project)
+        implementation 'com.amazonaws:aws-android-sdk-core:2.71.0'
+
+        // AWS Android SDK for KMS (Existing in your project)
+        implementation 'com.amazonaws:aws-android-sdk-kms:2.71.0'
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
+}
