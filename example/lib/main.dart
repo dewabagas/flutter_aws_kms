@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -48,7 +49,12 @@ class _KmsDemoPageState extends State<KmsDemoPage> {
   }
 
   void _initialize() async {
-    _awsKmsService.configure(_arnKey, _accessKeyId, _secretAccessKey, _region);
+    try {
+      await _awsKmsService.configure(_arnKey, _accessKeyId, _secretAccessKey);
+      log('AWS KMS configured successfully');
+    } catch (e) {
+      log('Error during initialization: $e');
+    }
   }
 
   Future<void> _encryptText() async {

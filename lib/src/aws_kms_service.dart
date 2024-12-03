@@ -1,20 +1,25 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/services.dart';
 
 class AwsKmsService {
   static const _channel = MethodChannel('aws.kms.channel');
 
-  Future<void> configure(String keyId, String accessKeyId,
-      String secretAccessKey, String region) async {
+  Future<void> configure(
+      String keyId, String accessKeyId, String secretAccessKey) async {
     try {
-      await _channel.invokeMethod<void>(
-        'configure',
-        {
-          'keyId': keyId,
-          'accessKeyId': accessKeyId,
-          'secretAccessKey': secretAccessKey,
-        },
-      );
+      final Map<String, dynamic> params = {
+        'keyId': keyId,
+        'accessKeyId': accessKeyId,
+        'secretAccessKey': secretAccessKey,
+      };
+
+      if (Platform.isAndroid) {
+        params['region'] = 'us-east-1';
+      }
+
+      await _channel.invokeMethod<void>('configure', params);
+      log('Configuration successful');
     } catch (e) {
       log('Error during configuration: $e');
     }
