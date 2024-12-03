@@ -18,32 +18,42 @@ import aws.smithy.kotlin.runtime.auth.awscredentials.CachedCredentialsProvider
 class AwsKmsPlugin : FlutterPlugin {
     private lateinit var channel: MethodChannel
 
-    private var credentialsProvider: CredentialsProvider? = null
-    private var region: String? = null
-    private var keyId: String? = null
-    private var accessKeyId: String? = null
-    private var secretAccessKey: String? = null
+    private lateinit var credentialsProvider: CredentialsProvider
+    private lateinit var region: String
+    private lateinit var keyId: String
+    private lateinit var accessKeyId: String
+    private lateinit var secretAccessKey: String
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "aws.kms.channel")
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "configure" -> {
-                    accessKeyId = call.argument<String>("accessKeyId")
-                    secretAccessKey = call.argument<String>("secretAccessKey")
-                    region = call.argument<String>("region")
-                    keyId = call.argument<String>("keyId")
+                    val tempAccessKeyId = call.argument<String>("accessKeyId")
+                    val tempSecretAccessKey = call.argument<String>("secretAccessKey")
+                    val tempRegion = call.argument<String>("region")
+                    val tempKeyId = call.argument<String>("keyId")
 
-                    if (accessKeyId != null && secretAccessKey != null && region != null && keyId != null) {
-                        // credentialsProvider = createCredentialsProvider(accessKeyId, secretAccessKey)
+                    if (tempAccessKeyId != null && tempSecretAccessKey != null && 
+                        tempRegion != null && tempKeyId != null) {
+                        
+                        accessKeyId = tempAccessKeyId
+                        secretAccessKey = tempSecretAccessKey
+                        region = tempRegion
+                        keyId = tempKeyId
+                        
                         result.success("AWS KMS configured successfully")
                     } else {
-                        result.error("CONFIGURATION_ERROR", "Invalid configuration parameters", null)
-                    }
+                        result.error(
+                            "CONFIGURATION_ERROR", 
+                            "Invalid configuration parameters", 
+                            null
+                        )
+                    }  
                 }
                 "encrypt" -> {
                     val plaintext = call.argument<String>("plaintext")
-                    if (credentialsProvider != null && region != null && keyId != null && plaintext != null) {
+                    if (region != null && keyId != null && plaintext != null) {
                         GlobalScope.launch {
                             val encryptedData = encryptData(plaintext)
                             withContext(Dispatchers.Main) {
@@ -60,7 +70,7 @@ class AwsKmsPlugin : FlutterPlugin {
                 }
                 "decrypt" -> {
                     val encryptedText = call.argument<String>("encryptedText")
-                    if (credentialsProvider != null && region != null && keyId != null && encryptedText != null) {
+                    if (region != null && keyId != null && encryptedText != null) {
                         GlobalScope.launch {
                             val decryptedData = decryptData(encryptedText)
                             withContext(Dispatchers.Main) {
@@ -97,43 +107,57 @@ class AwsKmsPlugin : FlutterPlugin {
         )
     }
 
+    private fun isConfigured(): Boolean {
+        return try {
+            accessKeyId
+            secretAccessKey
+            region
+            keyId
+            true
+        } catch (e: UninitializedPropertyAccessException) {
+            false
+        }
+    }
+
     private suspend fun encryptData(plaintext: String): String? {
+        if (!isConfigured()) {
+            println("Error: AWS KMS not properly configured")
+            return null
+        }
+        
         return withContext(Dispatchers.IO) {
             val kmsClient = KmsClient {
-                this.region = region
-                this.credentialsProvider = createCredentialsProvider(accessKeyId!!, secretAccessKey!!)
+                this.region = this@AwsKmsPlugin.region
+                credentialsProvider = createCredentialsProvider(accessKeyId, secretAccessKey)
             }
+    
             try {
                 val encryptRequest = EncryptRequest {
-                    this.keyId = keyId
+                    this.keyId = this@AwsKmsPlugin.keyId
                     this.plaintext = plaintext.toByteArray()
                 }
-                println("EncryptRequest KeyId: $keyId")
-                println("EncryptRequest Plaintext: $plaintext")
-    
+                
                 val response = kmsClient.encrypt(encryptRequest)
-                println("Encryption successful. CiphertextBlob: ${response.ciphertextBlob}")
-    
                 Base64.getEncoder().encodeToString(response.ciphertextBlob)
             } catch (e: Exception) {
                 println("Error during encryption: ${e.message}")
                 e.printStackTrace()
                 null
             } finally {
-                println("Closing KMS Client")
                 kmsClient.close()
             }
         }
     }
-    
-    
-    
 
     private suspend fun decryptData(encryptedText: String): String? {
+        if (!isConfigured()) {
+            println("Error: AWS KMS not properly configured")
+            return null
+        }
         return withContext(Dispatchers.IO) {
             val kmsClient = KmsClient {
-                this.region = region
-                this.credentialsProvider = createCredentialsProvider(accessKeyId!!, secretAccessKey!!)
+                this.region = this@AwsKmsPlugin.region
+                credentialsProvider = createCredentialsProvider(accessKeyId, secretAccessKey)
             }
             try {
                 val encryptedBytes = Base64.getDecoder().decode(encryptedText)
