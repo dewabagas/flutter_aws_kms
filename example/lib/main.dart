@@ -33,11 +33,11 @@ class _KmsDemoPageState extends State<KmsDemoPage> {
   final AwsKmsService _awsKmsService = AwsKmsService();
   final TextEditingController _plaintextController = TextEditingController();
 
-  final String _accessKeyId = 'AKIA6GBMDMGV22MFOXVH';
-  final String _secretAccessKey = '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';
-  final String _region = 'us-east-1';
+  final String _accessKeyId = '';
+  final String _secretAccessKey = '';
+  final String _region = '';
   final String _arnKey =
-      'arn:aws:kms:us-east-1:975050072491:key/67ae3a59-4c4b-4700-9044-633716f1443b';
+      '';
 
   String? _encryptedText;
   String? _decryptedText;
